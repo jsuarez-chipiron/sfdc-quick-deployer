@@ -7,6 +7,7 @@ int main()
 {
     std::string endpoint = "https://xxxxxxxx.my.salesforce.com/services/data/v55.0/tooling/sobjects/ApexClass";
     std::string token = "xxxxxxxx";
+    std::string config_filename = "/home/javier/Projects/salesforce/quick-deployer/resources/dictionary.dat";
 
     sfdc_client client(endpoint, token);
 
@@ -17,7 +18,8 @@ int main()
 
     client.delete_class(message);
 
-    resource_repo rr("config_filename");
+    resource_repo rr(config_filename);
+    rr.print_repo();
     orquestrator orq(std::move(client), std::move(rr));
     orq.test();
 

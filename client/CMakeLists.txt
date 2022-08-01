@@ -5,6 +5,6 @@ project(quick-deployer-client)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 
 add_executable(main main.cpp sfdc_client/sfdc_client.cpp orquestrator/orquestrator.cpp
-    resource_repo/resource_repo.cpp)
+    resource_repo/resource_repo.cpp serdes/resource_serdes.cpp)
 
 target_link_libraries(main /usr/lib/libcurl.so)
