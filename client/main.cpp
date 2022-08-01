@@ -1,5 +1,6 @@
 #include <iostream>
-#include "sfdc_client.h"
+#include "sfdc_client/sfdc_client.h"
+#include "orquestrator/orquestrator.h"
 
 int main()
 {
@@ -14,6 +15,9 @@ int main()
     std::cout << "message: " << message << "\n";
 
     client.delete_class(message);
+
+    orquestrator orq(std::move(client));
+    orq.test();
 
     return 0;
 }
