@@ -1,9 +1,9 @@
+#ifndef SFDC_CLIENT_H
+#define SFDC_CLIENT_H
+
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
-
-#ifndef SFDC_CLIENT_H
-#define SFDC_CLIENT_H
 
 class sfdc_client
 {
@@ -11,6 +11,24 @@ class sfdc_client
         sfdc_client(std::string endpoint, std::string token):
             endpoint_(std::move(endpoint)), token_(std::move(token)), curl_(curl_easy_init())
         {}
+
+        sfdc_client(const sfdc_client& rhs) = delete;
+
+        sfdc_client(sfdc_client&& rhs) noexcept : endpoint_(std::move(rhs.endpoint_)), token_(std::move(rhs.token_)), curl_(rhs.curl_)
+        {
+            rhs.curl_ = nullptr;
+        }
+            
+        sfdc_client& operator=(const sfdc_client& rhs) = delete;
+
+        sfdc_client& operator=(sfdc_client&& rhs) noexcept                                                                                                                                  
+        {
+            endpoint_ = std::move(rhs.endpoint_);
+            token_ = std::move(rhs.token_);
+            curl_ = rhs.curl_;
+            rhs.curl_ = nullptr;
+            return *this;
+        }
 
         ~sfdc_client();
 
