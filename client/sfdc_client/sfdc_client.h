@@ -9,12 +9,17 @@ class sfdc_client
 {
     public:
         sfdc_client(std::string endpoint, std::string token):
-            endpoint_(std::move(endpoint)), token_(std::move(token)), curl_(curl_easy_init())
+            endpoint_(std::move(endpoint)), 
+            token_(std::move(token)), 
+            curl_(curl_easy_init())
         {}
 
         sfdc_client(const sfdc_client& rhs) = delete;
 
-        sfdc_client(sfdc_client&& rhs) noexcept : endpoint_(std::move(rhs.endpoint_)), token_(std::move(rhs.token_)), curl_(rhs.curl_)
+        sfdc_client(sfdc_client&& rhs) noexcept : 
+            endpoint_(std::move(rhs.endpoint_)), 
+            token_(std::move(rhs.token_)), 
+            curl_(rhs.curl_)
         {
             rhs.curl_ = nullptr;
         }
