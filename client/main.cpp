@@ -1,6 +1,7 @@
 #include <iostream>
 #include "sfdc_client/sfdc_client.h"
 #include "orquestrator/orquestrator.h"
+#include "resource_repo/resource_repo.h"
 
 int main()
 {
@@ -16,7 +17,8 @@ int main()
 
     client.delete_class(message);
 
-    orquestrator orq(std::move(client));
+    resource_repo rr("config_filename");
+    orquestrator orq(std::move(client), std::move(rr));
     orq.test();
 
     return 0;
