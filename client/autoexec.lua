@@ -1,4 +1,4 @@
-local bufnr = 3 -- Change me with the command :lua vim.api.nvim_get_current_buf()
+local bufnr = 37 -- Change me with the command :lua vim.api.nvim_get_current_buf()
 -- :luafile autoexec.lua
 
 vim.api.nvim_create_autocmd("BufWritePost", {
