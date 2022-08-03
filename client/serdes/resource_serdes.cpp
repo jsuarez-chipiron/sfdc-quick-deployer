@@ -31,7 +31,7 @@ resource resource_serdes::deserialize(const std::string& line)
                     orgid = buff;
                     break;
                 default:
-                    std::cout << "what the fuck\n";
+                    return resource("error_deserializing", "", "");
             }
             buff = "";
         }
@@ -47,5 +47,6 @@ resource resource_serdes::deserialize(const std::string& line)
 
 std::string resource_serdes::serialize(const resource& resource)
 {
-    return "implement me!!";
+    std::string ret = resource.get_classname()+","+resource.get_classid()+","+resource.get_orgid()+",";
+    return ret;
 }
