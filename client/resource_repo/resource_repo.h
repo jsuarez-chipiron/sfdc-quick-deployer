@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <tuple>
 
 class resource
 {
@@ -75,14 +76,16 @@ class resource_repo
 
         bool insert(const std::string& identifier, const resource& res);
 
-        resource get_login_details() const;
+        std::tuple<std::string, std::string> read_login_details() const;
+
+        std::tuple<std::string, std::string> get_login_details() const;
 
         void print_repo() const;
 
     private:
         std::unordered_map<std::string, resource> repo_;
         std::string filepath_;
-        resource login_details_;
+        std::tuple<std::string, std::string> login_details_;
 };
 
 #endif

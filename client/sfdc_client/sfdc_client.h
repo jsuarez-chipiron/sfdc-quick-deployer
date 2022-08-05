@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <tuple>
 #include <curl/curl.h>
 
 class sfdc_client
@@ -13,6 +14,8 @@ class sfdc_client
             token_(std::move(token)), 
             curl_(curl_easy_init())
         {}
+
+        sfdc_client(const std::tuple<std::string, std::string>& login_tuple);
 
         sfdc_client(const sfdc_client& rhs) = delete;
 

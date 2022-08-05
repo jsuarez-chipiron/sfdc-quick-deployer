@@ -3,6 +3,10 @@
 #include <curl/curl.h>
 #include "sfdc_client.h"
 
+sfdc_client::sfdc_client(const std::tuple<std::string, std::string>& login_tuple): 
+    sfdc_client(std::get<1>(login_tuple), std::get<0>(login_tuple))
+{}
+
 sfdc_client::~sfdc_client()
 {
     curl_easy_cleanup(curl_);

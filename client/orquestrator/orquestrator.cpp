@@ -47,6 +47,7 @@ void orquestrator::upload_resource(const std::string& resource_filepath, const s
             return;
         }
 
+        //TODO: borrar esta linea
         sfdc_client_.delete_class(message);
 
         resource_repo_.print_repo();

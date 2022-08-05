@@ -17,8 +17,9 @@ resource_repo::resource_repo(const std::string& filepath): filepath_(filepath)
         repo_.insert({res.get_classname()+res.get_orgid(), res});
     }
 
-    auto login_details = get_login_details();
-    if ( login_details.get_classname().empty() )
+    //TODO: dejar de usor el resource y crear directamente la tupla de login details
+    auto login_details = read_login_details();
+    if ( std::get<0>(login_details).empty() )
     {
         std::cerr << "ERROR: invalid login config\n";
         exit(-1);
@@ -26,21 +27,27 @@ resource_repo::resource_repo(const std::string& filepath): filepath_(filepath)
     login_details_ = login_details;
 }
 
+std::tuple<std::string, std::string> resource_repo::get_login_details() const
+{
+    return login_details_;
+}
+
 std::unordered_map<std::string, resource> resource_repo::get_repo() const
 {
     return repo_;
 }
 
-resource resource_repo::get_login_details() const
+std::tuple<std::string, std::string> resource_repo::read_login_details() const
 {
     for (const auto& item: repo_)
     {
         if ( item.second.get_classname() == "*" )
         {
-            return item.second;
+            auto ret = item.second;
+            return std::make_tuple(ret.get_classid(), ret.get_orgid());
         }
     }
-    return resource("","","");
+    return std::make_tuple("","");
 }
 
 void resource_repo::print_repo() const
