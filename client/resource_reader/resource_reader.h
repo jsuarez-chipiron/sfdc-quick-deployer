@@ -1,3 +1,6 @@
+#ifndef RESOURCE_READER_H
+#define RESOURCE_READER_H
+
 #include <iostream>
 
 class resource_reader
@@ -26,3 +29,4 @@ class resource_reader
 
 };
 
+#endif
