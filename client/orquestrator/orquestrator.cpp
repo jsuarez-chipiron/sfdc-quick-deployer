@@ -1,8 +1,22 @@
 #include <iostream>
 #include "orquestrator.h"
-#include "../sfdc_client/sfdc_client.h"
 
 void orquestrator::test()
 {
-    std::cout << "yeah\n";
+    const auto [httpcode, message] = sfdc_client_.create_class(resource_reader_.create_body());
+
+    std::cout << "httpcode: " << httpcode << "\n";
+    std::cout << "message: " << message << "\n";
+
+    sfdc_client_.delete_class(message);
+
+    resource_repo_.print_repo();
 }
+
+void orquestrator::upload_resource(const std::string& resource_filepath, const std::string& orgid)
+{
+    std::string filename = utils_.get_filename_from_filepath(resource_filepath);
+    std::cout << "upload_resource: " << filename << "\n";
+}
+
+
