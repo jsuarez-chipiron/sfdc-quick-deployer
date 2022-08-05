@@ -1,5 +1,5 @@
 public class MySuperCoolTest{
     public String sayHi() {
-        return 'hello';
+        return 'hello javier';
     }
 }

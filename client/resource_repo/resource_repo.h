@@ -3,42 +3,7 @@
 
 #include <iostream>
 #include <unordered_map>
-#include <utility>
 
-class resource;
-
-class resource_repo
-{
-    public:
-        explicit resource_repo(const std::string& filepath);
-
-        resource_repo(const resource_repo& rhs) = delete;
-
-        resource_repo(resource_repo&& rhs) noexcept: 
-            repo_(std::move(rhs.repo_)),
-            filepath_(std::move(rhs.filepath_))
-        {}
-
-        resource_repo& operator=(const resource_repo& rhs) = delete;
-
-        resource_repo& operator=(resource_repo&& rhs) noexcept                                                                                                                                  
-        {
-            repo_ = std::move(rhs.repo_);
-            filepath_ = std::move(rhs.filepath_);
-            return *this;
-        }
-
-        ~resource_repo() = default;
-
-        void print_repo() const;
-
-    private:
-        std::unordered_map<std::string, resource> repo_;
-        std::string filepath_;
-
-};
-
-// classname, classid, orgid
 class resource
 {
     public:
@@ -80,4 +45,44 @@ class resource
         std::string classid_;
         std::string orgid_;
 };
+
+class resource_repo
+{
+    public:
+        explicit resource_repo(const std::string& filepath);
+
+        resource_repo(const resource_repo& rhs) = delete;
+
+        resource_repo(resource_repo&& rhs) noexcept: 
+            repo_(std::move(rhs.repo_)),
+            filepath_(std::move(rhs.filepath_))
+        {}
+
+        resource_repo& operator=(const resource_repo& rhs) = delete;
+
+        resource_repo& operator=(resource_repo&& rhs) noexcept                                                                                                                                  
+        {
+            repo_ = std::move(rhs.repo_);
+            filepath_ = std::move(rhs.filepath_);
+            return *this;
+        }
+
+        ~resource_repo() = default;
+
+        std::unordered_map<std::string, resource> get_repo() const;
+
+        bool write_to_file() const;
+
+        bool insert(const std::string& identifier, const resource& res);
+
+        resource get_login_details() const;
+
+        void print_repo() const;
+
+    private:
+        std::unordered_map<std::string, resource> repo_;
+        std::string filepath_;
+        resource login_details_;
+};
+
 #endif
