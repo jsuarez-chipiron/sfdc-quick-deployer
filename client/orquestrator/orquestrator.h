@@ -10,12 +10,13 @@
 class orquestrator
 {
     public:
-        explicit orquestrator(sfdc_client&& sfdc_client, resource_repo&& resource_repo, 
+        orquestrator(sfdc_client&& sfdc_client, resource_repo&& resource_repo, 
                 resource_reader&& resource_reader, utils&& utils):
             sfdc_client_(std::move(sfdc_client)),
             resource_repo_(std::move(resource_repo)),
             resource_reader_(std::move(resource_reader)),
-            utils_(std::move(utils)) {}
+            utils_(std::move(utils)) 
+        {}
 
         void test();
 

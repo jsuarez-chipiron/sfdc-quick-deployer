@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+// #include <sstream>
 #include "resource_reader.h"
 
 std::string resource_reader::get_filepath() const
@@ -15,9 +16,10 @@ std::string resource_reader::create_body() const
     std::string line;
     while (std::getline(infile, line))
     {
-        tmpl += line;
+        tmpl += line + "\\n";
     }
     std::string ret = R"({"Body": ")";
     ret += tmpl + "\"}";
+
     return ret;
 }

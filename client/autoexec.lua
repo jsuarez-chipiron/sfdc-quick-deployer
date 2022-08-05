@@ -3,7 +3,7 @@ local bufnr = 72 -- Change me with the command :lua vim.api.nvim_get_current_buf
 
 vim.api.nvim_create_autocmd("BufWritePost", {
     group = vim.api.nvim_create_augroup("AUTOEXEC", { clear = true }),
-    pattern = "*",
+    pattern = "*.cpp",
     callback = function()
         local append_data = function(_, data)
             if data then
