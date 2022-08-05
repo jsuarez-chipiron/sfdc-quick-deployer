@@ -3,25 +3,30 @@
 #include "orquestrator/orquestrator.h"
 #include "resource_repo/resource_repo.h"
 
+#include "resource_reader/resource_reader.h"
+
 int main()
 {
     std::string endpoint = "https://xxxxxxxx.my.salesforce.com/services/data/v55.0/tooling/sobjects/ApexClass";
     std::string token = "xxxxxxxx";
-    std::string config_filename = "/home/javier/Projects/salesforce/quick-deployer/resources/dictionary.dat";
+    std::string filepath = "/home/javier/Projects/salesforce/quick-deployer/resources/dictionary.dat";
 
     sfdc_client client(endpoint, token);
 
-    std::string body = R"({ "Body": "public class MySuperCoolTest{\n\tpublic String sayHi() {\n\t\treturn 'hello';\n\t}\n}"})";
-    const auto [httpcode, message] = client.create_class(body);
+    resource_reader rreader("../../resources/class.cls");
+
+    const auto [httpcode, message] = client.create_class(rreader.create_body());
+
     std::cout << "httpcode: " << httpcode << "\n";
     std::cout << "message: " << message << "\n";
 
     client.delete_class(message);
 
-    resource_repo rr(config_filename);
+    resource_repo rr(filepath);
     rr.print_repo();
     orquestrator orq(std::move(client), std::move(rr));
     orq.test();
+
 
     return 0;
 }

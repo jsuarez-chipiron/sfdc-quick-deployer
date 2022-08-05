@@ -10,13 +10,13 @@ class resource;
 class resource_repo
 {
     public:
-        explicit resource_repo(const std::string& config_filename);
+        explicit resource_repo(const std::string& filepath);
 
         resource_repo(const resource_repo& rhs) = delete;
 
         resource_repo(resource_repo&& rhs) noexcept: 
             repo_(std::move(rhs.repo_)),
-            config_filename_(std::move(rhs.config_filename_))
+            filepath_(std::move(rhs.filepath_))
         {}
 
         resource_repo& operator=(const resource_repo& rhs) = delete;
@@ -24,7 +24,7 @@ class resource_repo
         resource_repo& operator=(resource_repo&& rhs) noexcept                                                                                                                                  
         {
             repo_ = std::move(rhs.repo_);
-            config_filename_ = std::move(rhs.config_filename_);
+            filepath_ = std::move(rhs.filepath_);
             return *this;
         }
 
@@ -34,7 +34,7 @@ class resource_repo
 
     private:
         std::unordered_map<std::string, resource> repo_;
-        std::string config_filename_;
+        std::string filepath_;
 
 };
 
