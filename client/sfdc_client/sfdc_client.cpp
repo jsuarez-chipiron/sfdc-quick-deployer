@@ -28,16 +28,15 @@ std::pair<int, std::string> sfdc_client::create_class(const std::string body)
 
         curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
 
-
         curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());
         curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_fun);
         curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response_string);
 
         CURLcode res = curl_easy_perform(curl_);
 
-        if(res != CURLE_OK)
-        {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
+        if (res != CURLE_OK) {
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
+                << "\n";
             exit(-1);
         }
         else
@@ -100,7 +99,7 @@ std::pair<int, std::string> sfdc_client::delete_class(const std::string& class_i
     return std::pair<int, std::string>(0, "");
 }
 
- size_t sfdc_client::write_fun(void *ptr, size_t size, size_t nmemb, std::string* data)
+size_t sfdc_client::write_fun(void *ptr, size_t size, size_t nmemb, std::string* data)
 {
     std::cout << "*****\t\tnew chunk\n";
     data->append((char*) ptr, size * nmemb);

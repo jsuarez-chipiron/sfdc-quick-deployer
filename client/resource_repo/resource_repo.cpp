@@ -4,9 +4,9 @@
 #include "resource_repo.h"
 #include "../serdes/resource_serdes.h"
 
-resource_repo::resource_repo(const std::string& config_filename)
+resource_repo::resource_repo(const std::string& filepath)
 {
-    std::ifstream infile(config_filename);
+    std::ifstream infile(filepath);
 
     resource_serdes re_serdes;
 
