@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "orquestrator.h"
 
 void orquestrator::test()
@@ -17,7 +18,7 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
 {
     std::string orgid = std::get<1>(resource_repo_.get_login_details());
 
-    std::string filename = utils_.get_filename_from_filepath(resource_filepath);
+    std::string filename = get_filename_from_filepath(resource_filepath);
     std::cout << "upload_resource (filename): " << filename << "\n";
 
     std::string identifier = filename + orgid;
@@ -62,4 +63,19 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
 
 }
 
+std::string orquestrator::get_filename_from_filepath(const std::string& filepath)
+{
+    auto found_slash = filepath.find_last_of('/');
+    size_t begin = 0;
 
+    if ( found_slash != std::string::npos )
+    {
+        begin = found_slash+1;
+    }
+
+    auto found_dot = filepath.find_last_of('.');
+    
+    if ( found_dot == std::string::npos ) { return ""; }
+
+    return filepath.substr(begin, found_dot-begin);
+}

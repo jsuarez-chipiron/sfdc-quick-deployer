@@ -3,7 +3,6 @@
 #include "orquestrator/orquestrator.h"
 #include "resource_repo/resource_repo.h"
 #include "resource_reader/resource_reader.h"
-#include "utils/utils.h"
 
 int main()
 {
@@ -15,11 +14,10 @@ int main()
     resource_repo rrepo(filepath);
     sfdc_client client(rrepo.get_login_details());
     resource_reader rreader(classpath);
-    utils utils;
 
     // rrepo.print_repo();
 
-    orquestrator orq(std::move(client), std::move(rrepo), std::move(rreader), std::move(utils));
+    orquestrator orq(std::move(client), std::move(rrepo), std::move(rreader));
     orq.upload_resource(classpath);
     // orq.test();
 
