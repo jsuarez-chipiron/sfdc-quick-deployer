@@ -71,6 +71,12 @@ bool resource_repo::write_to_file() const
     return true;
 }
 
+bool resource_repo::delete_from_repo(const std::string& identifier)
+{
+    repo_.erase(identifier);
+    return write_to_file();
+}
+
 bool resource_repo::insert(const std::string& identifier, const resource& res)
 {
     auto insert_result = repo_.insert({identifier, res});

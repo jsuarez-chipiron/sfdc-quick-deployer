@@ -23,7 +23,7 @@ class orquestrator
 
         void test();
 
-        void upload_resource(const std::string& resource_filepath, const std::string& orgid);
+        void upload_resource(const std::string& resource_filepath);
 
     private:
         sfdc_client sfdc_client_;

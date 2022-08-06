@@ -68,6 +68,8 @@ class resource_repo
 
         bool write_to_file() const;
 
+        bool delete_from_repo(const std::string& identifier);
+
         bool insert(const std::string& identifier, const resource& res);
 
         std::tuple<std::string, std::string> read_login_details() const;

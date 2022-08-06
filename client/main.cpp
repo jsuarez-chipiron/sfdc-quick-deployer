@@ -19,11 +19,8 @@ int main()
 
     // rrepo.print_repo();
 
-    std::cout << "1 login details (endpoint): " << std::get<1>(rrepo.get_login_details()) << "\n";
-    std::cout << "1 login details (token): " << std::get<0>(rrepo.get_login_details()) << "\n";
-
     orquestrator orq(std::move(client), std::move(rrepo), std::move(rreader), std::move(utils));
-    orq.upload_resource(classpath, "xxxxx");
+    orq.upload_resource(classpath);
     // orq.test();
 
     return 0;
