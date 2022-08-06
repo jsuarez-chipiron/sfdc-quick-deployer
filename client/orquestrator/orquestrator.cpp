@@ -15,6 +15,9 @@ void orquestrator::test()
 
 void orquestrator::upload_resource(const std::string& resource_filepath, const std::string& orgid)
 {
+    std::cout << "login details (endpoint): " << std::get<1>(resource_repo_.get_login_details()) << "\n";
+    std::cout << "login details (token): " << std::get<0>(resource_repo_.get_login_details()) << "\n";
+
     std::string filename = utils_.get_filename_from_filepath(resource_filepath);
     std::cout << "upload_resource: " << filename << "\n";
 

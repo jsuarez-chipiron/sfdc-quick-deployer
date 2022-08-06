@@ -16,7 +16,10 @@ class orquestrator
             resource_repo_(std::move(resource_repo)),
             resource_reader_(std::move(resource_reader)),
             utils_(std::move(utils)) 
-        {}
+        {
+            std::cout << "2 login details (endpoint): " << std::get<1>(resource_repo_.get_login_details()) << "\n";
+            std::cout << "2 login details (token): " << std::get<0>(resource_repo_.get_login_details()) << "\n";
+        }
 
         void test();
 
