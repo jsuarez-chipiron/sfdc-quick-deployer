@@ -10,7 +10,6 @@ sfdc_client::sfdc_client(const std::tuple<std::string, std::string>& login_tuple
 sfdc_client::~sfdc_client()
 {
     curl_easy_cleanup(curl_);
-    std::cout << "ciao sfdc_client\n";
 }
 
 std::pair<int, std::string> sfdc_client::create_class(const std::string body)
@@ -25,7 +24,6 @@ std::pair<int, std::string> sfdc_client::create_class(const std::string body)
         struct curl_slist *headers = nullptr;
 
         std::string auth_header = "Authorization: Bearer " + token_;
-        std::cout << auth_header << "\n";
 
         headers = curl_slist_append(headers, auth_header.c_str());
         headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -42,10 +40,6 @@ std::pair<int, std::string> sfdc_client::create_class(const std::string body)
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
                 << "\n";
             exit(-1);
-        }
-        else
-        {
-            std::cout << "response: " << response_string << "\n";
         }
 
         long http_code = 0;
@@ -71,8 +65,6 @@ std::pair<int, std::string> sfdc_client::delete_class(const std::string& class_i
         struct curl_slist *headers = nullptr;
 
         std::string auth_header = "Authorization: Bearer " + token_;
-        std::cout << "endpoint: " << endpoint << "\n";
-        std::cout << "auth_header: " << auth_header << "\n";
 
         headers = curl_slist_append(headers, auth_header.c_str());
         headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -83,7 +75,6 @@ std::pair<int, std::string> sfdc_client::delete_class(const std::string& class_i
 
         long http_code = 0;
         curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &http_code);
-        std::cout << "status code: " << http_code << "\n";
 
         if ( http_code != 204 )
         {
@@ -95,17 +86,12 @@ std::pair<int, std::string> sfdc_client::delete_class(const std::string& class_i
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
             exit(-1);
         }
-        else
-        {
-            std::cout << http_code << "\n";
-        }
     }
     return std::pair<int, std::string>(0, "");
 }
 
 size_t sfdc_client::write_fun(void *ptr, size_t size, size_t nmemb, std::string* data)
 {
-    std::cout << "*****\t\tnew chunk\n";
     data->append((char*) ptr, size * nmemb);
     return size * nmemb;
 }
