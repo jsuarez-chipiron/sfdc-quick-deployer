@@ -9,13 +9,14 @@
 class sfdc_client
 {
     public:
-        sfdc_client(std::string endpoint, std::string token):
-            endpoint_(std::move(endpoint)), 
-            token_(std::move(token)), 
+        // No se puede pasar por valor y mover porque se pierde el valor para su uso más adelante
+        sfdc_client(const std::string& endpoint, const std::string& token): // NOLINT
+            endpoint_(endpoint), 
+            token_(token), 
             curl_(curl_easy_init())
         {}
 
-        sfdc_client(const std::tuple<std::string, std::string>& login_tuple);
+        explicit sfdc_client(const std::tuple<std::string, std::string>& login_tuple);
 
         sfdc_client(const sfdc_client& rhs) = delete;
 

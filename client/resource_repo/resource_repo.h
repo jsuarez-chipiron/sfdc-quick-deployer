@@ -28,10 +28,7 @@ class resource
 
         resource& operator=(const resource& rhs) = default;
 
-        resource& operator=(resource&& rhs) noexcept                                                                                                                                  
-        {
-            return *this;
-        }
+        resource& operator=(resource&& rhs) noexcept = default;
 
         ~resource() = default;
 
@@ -52,22 +49,19 @@ class resource_repo
     public:
         explicit resource_repo(const std::string& filepath);
 
-        resource_repo(const resource_repo& rhs) = delete;
+        resource_repo(const resource_repo& rhs) = default;
 
-        resource_repo(resource_repo&& rhs) noexcept: 
-            repo_(std::move(rhs.repo_)),
-            filepath_(std::move(rhs.filepath_))
-        {}
+        resource_repo(resource_repo&& rhs) noexcept = default; 
+        // resource_repo(resource_repo&& rhs) noexcept: 
+        //     repo_(std::move(repo_)),
+        //     filepath_(std::move(filepath_)),
+        //     login_details_(std::move(login_details_))
+        // {}
 
         resource_repo& operator=(const resource_repo& rhs) = delete;
 
-        resource_repo& operator=(resource_repo&& rhs) noexcept                                                                                                                                  
-        {
-            repo_ = std::move(rhs.repo_);
-            filepath_ = std::move(rhs.filepath_);
-            return *this;
-        }
-
+        resource_repo& operator=(resource_repo&& rhs) noexcept = default;
+        
         ~resource_repo() = default;
 
         std::unordered_map<std::string, resource> get_repo() const;
