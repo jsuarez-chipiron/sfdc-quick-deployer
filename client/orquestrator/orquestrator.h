@@ -14,10 +14,7 @@ class orquestrator
             sfdc_client_(std::move(sfdc_client)),
             resource_repo_(std::move(resource_repo)),
             resource_reader_(std::move(resource_reader))
-        {
-            std::cout << "2 login details (endpoint): " << std::get<1>(resource_repo_.get_login_details()) << "\n";
-            std::cout << "2 login details (token): " << std::get<0>(resource_repo_.get_login_details()) << "\n";
-        }
+        {}
 
         void test();
 

@@ -60,7 +60,6 @@ void resource_repo::print_repo() const
 
 bool resource_repo::write_to_file() const
 {
-    std::cout << "write_to_file: " << filepath_ << "\n";
     std::ofstream out(filepath_);
     resource_serdes re_serdes;
     for (const auto& item: repo_)
