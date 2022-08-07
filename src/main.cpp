@@ -15,11 +15,11 @@ int main()
     sfdc_client client(rrepo.get_login_details());
     resource_reader rreader(classpath);
 
-    // rrepo.print_repo();
-
     orquestrator orq(std::move(client), std::move(rrepo), std::move(rreader));
+
+    orq.test();
+
     orq.upload_resource(classpath);
-    // orq.test();
 
     return 0;
 }
