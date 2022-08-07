@@ -9,7 +9,7 @@
 class orquestrator
 {
     public:
-        orquestrator(sfdc_client&& sfdc_client, resource_repo&& resource_repo, 
+        orquestrator(sfdc_client&& sfdc_client, resource_repo&& resource_repo,
                 resource_reader&& resource_reader):
             sfdc_client_(std::move(sfdc_client)),
             resource_repo_(std::move(resource_repo)),

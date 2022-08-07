@@ -4,14 +4,10 @@
 
 void orquestrator::test()
 {
-    const auto [httpcode, message] = sfdc_client_.create_class(resource_reader_.create_body());
-
-    std::cout << "httpcode: " << httpcode << "\n";
-    std::cout << "message: " << message << "\n";
-
-    sfdc_client_.delete_class(message);
-
-    resource_repo_.print_repo();
+    const auto [code, url, token] = sfdc_client_.login("https://login.salesforce.com/services/Soap/c/55.0/xxxxxxx", "username@force.com", "xxxxxxx");
+    std::cout << "resp_code: " << code << "\n";
+    std::cout << "url: " << url << "\n";
+    std::cout << "token: " << token << "\n";
 }
 
 void orquestrator::upload_resource(const std::string& resource_filepath)
@@ -65,7 +61,7 @@ std::string orquestrator::get_filename_from_filepath(const std::string& filepath
     }
 
     auto found_dot = filepath.find_last_of('.');
-    
+
     if ( found_dot == std::string::npos ) { return ""; }
 
     return filepath.substr(begin, found_dot-begin);
