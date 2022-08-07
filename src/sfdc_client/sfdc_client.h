@@ -41,7 +41,7 @@ class sfdc_client
 
         ~sfdc_client();
 
-        std::pair<int, std::string> create_class(const std::string body);
+        std::pair<int, std::string> create_class(const std::string& body);
 
         std::pair<int, std::string> delete_class(const std::string& class_id);
 
@@ -52,8 +52,8 @@ class sfdc_client
 
         static size_t write_fun(void *ptr, size_t size, size_t nmemb, std::string* data);
 
-        std::string parse_error(const std::string& raw_response) const;
+        static std::string parse_error(const std::string& raw_response);
 
-        std::string parse_ok(const std::string& raw_response) const;
+        static std::string parse_ok(const std::string& raw_response);
 };
 #endif
