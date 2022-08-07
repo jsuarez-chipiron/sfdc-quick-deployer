@@ -8,8 +8,8 @@ int main()
 {
     // std::string endpoint = "https://xxxxxxxx.my.salesforce.com/services/data/v55.0/tooling/sobjects/ApexClass";
     // std::string token = "xxxxxxxx";
-    std::string filepath = "/home/javier/Projects/salesforce/quick-deployer/resources/dictionary.dat";
-    std::string classpath = "../../resources/class.cls";
+    std::string filepath = "../resources/dictionary.dat";
+    std::string classpath = "../resources/class.cls";
 
     resource_repo rrepo(filepath);
     sfdc_client client(rrepo.get_login_details());
