@@ -67,6 +67,19 @@ bool resource_repo::write_to_file() const
     return true;
 }
 
+bool resource_repo::update_login_details(const std::string& token, const std::string& url)
+{
+    for (auto& item: repo_)
+    {
+        if ( item.second.get_classname() == "*" )
+        {
+            item.second.set_classid(token);
+            item.second.set_orgid(convert_to_tooling_url(url));
+        }
+    }
+    return write_to_file();
+}
+
 bool resource_repo::delete_from_repo(const std::string& identifier)
 {
     repo_.erase(identifier);
@@ -77,6 +90,16 @@ bool resource_repo::insert(const std::string& identifier, const resource& res)
 {
     auto insert_result = repo_.insert({identifier, res});
     return insert_result.second && write_to_file();
+}
+
+std::string resource_repo::convert_to_tooling_url(const std::string& url)
+{
+    auto found = url.find("Soap/c");
+    if ( found != std::string::npos )
+    {
+        return url.substr(0, found) + "data/v55.0/tooling/sobjects/ApexClass";
+    }
+    return "";
 }
 
 /* resource */
@@ -95,3 +118,12 @@ std::string resource::get_orgid() const
     return orgid_;
 }
 
+void resource::set_classid(const std::string& classid)
+{
+    classid_ = classid;
+}
+
+void resource::set_orgid(const std::string& orgid)
+{
+    orgid_ = orgid;
+}

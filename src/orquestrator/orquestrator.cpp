@@ -7,13 +7,6 @@ int orquestrator::execute(int argc, char** argv)
 {
     const auto[ok, is_login, username, password, login_url, resource_path] = parse_flags(argc, argv);
 
-    std::cout << ok << "\n";
-    std::cout << is_login << "\n";
-    std::cout << username << "\n";
-    std::cout << password << "\n";
-    std::cout << login_url << "\n";
-    std::cout << resource_path << "\n";
-
     if ( !ok ) 
     {
         return 1;
@@ -34,12 +27,14 @@ int orquestrator::execute(int argc, char** argv)
 void orquestrator::update_login(const std::string& login_url, const std::string& username, const std::string& password)
 {
     std::string full_login_url = login_url+"/services/Soap/c/55.0";
-    std::cout << full_login_url << "\n";
-    // const auto [code, url, token] = sfdc_client_.login("https://login.salesforce.com/services/Soap/c/55.0/xxxxxxx", "username@force.com", "xxxxxxx");
+
     const auto [code, url, token] = sfdc_client_.login(full_login_url, username, password);
-    std::cout << "resp_code: " << code << "\n";
-    std::cout << "url: " << url << "\n";
-    std::cout << "token: " << token << "\n";
+    if ( resource_repo_.update_login_details(token, url) )
+    {
+        std::cout << "Login details updated correctly\n";
+        return;
+    }
+    std::cerr << "ERROR: update login details\n";
 }
 
 void orquestrator::upload_resource(const std::string& resource_filepath)
