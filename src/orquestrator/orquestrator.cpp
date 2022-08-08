@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "orquestrator.h"
+#include "../resource_reader/resource_reader.h"
 
 int orquestrator::execute(int argc, char** argv)
 {
@@ -59,7 +60,8 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
         resource_repo_.delete_from_repo(identifier);
     }
 
-    const auto [code, message] = sfdc_client_.create_class(resource_reader_.create_body());
+    resource_reader r_reader(resource_filepath);
+    const auto [code, message] = sfdc_client_.create_class(r_reader.create_body());
 
     if ( code != 0 )
     {

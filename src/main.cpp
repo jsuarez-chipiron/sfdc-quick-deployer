@@ -6,7 +6,6 @@
 #include "sfdc_client/sfdc_client.h"
 #include "orquestrator/orquestrator.h"
 #include "resource_repo/resource_repo.h"
-#include "resource_reader/resource_reader.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,14 +15,13 @@ int main(int argc, char *argv[])
         return str.c_str();
     });
 
-    std::string filepath = "../resources/dictionary.dat";
-    std::string classpath = "../resources/class.cls";
+    std::string filepath = "/home/javier/Tech/c++/sfdc-quick-deployer/resources/dictionary.dat"; //TODO: put the dictionary in a config dir
 
     resource_repo r_repo(filepath);
     sfdc_client client(r_repo.get_login_details());
-    resource_reader rreader(classpath);
+    // resource_reader r_reader(classpath);
 
-    orquestrator orq(std::move(client), std::move(r_repo), std::move(rreader));
+    orquestrator orq(std::move(client), std::move(r_repo));
 
     return orq.execute(converted_argv.size(), const_cast<char**>(converted_argv.data())); //NOLINT
 }
