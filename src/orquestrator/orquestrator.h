@@ -9,11 +9,9 @@
 class orquestrator
 {
     public:
-        orquestrator(sfdc_client&& sfdc_client, resource_repo&& resource_repo,
-                resource_reader&& resource_reader):
+        orquestrator(sfdc_client&& sfdc_client, resource_repo&& resource_repo):
             sfdc_client_(std::move(sfdc_client)),
-            resource_repo_(std::move(resource_repo)),
-            resource_reader_(std::move(resource_reader))
+            resource_repo_(std::move(resource_repo))
         {}
 
         int execute(int argc, char** argv);
@@ -25,7 +23,6 @@ class orquestrator
     private:
         sfdc_client sfdc_client_;
         resource_repo resource_repo_;
-        resource_reader resource_reader_;
 
         static std::tuple<bool, bool, std::string, std::string, std::string, std::string> parse_flags(int argc, char** argv);
 
