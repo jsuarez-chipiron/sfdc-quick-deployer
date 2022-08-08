@@ -30,12 +30,15 @@ void orquestrator::update_login(const std::string& login_url, const std::string&
     std::string full_login_url = login_url+"/services/Soap/c/55.0";
 
     const auto [code, url, token] = sfdc_client_.login(full_login_url, username, password);
-    if ( resource_repo_.update_login_details(token, url) )
+    if ( code == 0 )
     {
-        std::cout << "Login details updated correctly\n";
-        return;
+        if ( resource_repo_.update_login_details(token, url) )
+        {
+            std::cout << "Login details updated correctly\n";
+            return;
+        }
     }
-    std::cerr << "ERROR: update login details\n";
+    std::cerr << "ERROR: updating login details\n";
 }
 
 void orquestrator::upload_resource(const std::string& resource_filepath)
