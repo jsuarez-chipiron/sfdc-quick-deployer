@@ -16,7 +16,9 @@ class orquestrator
             resource_reader_(std::move(resource_reader))
         {}
 
-        void test();
+        int execute(int argc, char** argv);
+
+        void update_login(const std::string& login_url, const std::string& username, const std::string& password);
 
         void upload_resource(const std::string& resource_filepath);
 
@@ -24,6 +26,8 @@ class orquestrator
         sfdc_client sfdc_client_;
         resource_repo resource_repo_;
         resource_reader resource_reader_;
+
+        static std::tuple<bool, bool, std::string, std::string, std::string, std::string> parse_flags(int argc, char** argv);
 
         static std::string get_filename_from_filepath(const std::string& filepath);
 };
