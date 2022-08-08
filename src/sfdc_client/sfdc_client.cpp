@@ -9,7 +9,10 @@ sfdc_client::sfdc_client(const std::tuple<std::string, std::string>& login_tuple
 
 sfdc_client::~sfdc_client()
 {
-    curl_easy_cleanup(curl_);
+    if (curl_ != nullptr)
+    {
+        curl_easy_cleanup(curl_);
+    }
 }
 
 std::pair<int, std::string> sfdc_client::create_class(const std::string& body)
@@ -17,6 +20,8 @@ std::pair<int, std::string> sfdc_client::create_class(const std::string& body)
     std::string response_string;
     if (curl_ != nullptr)
     {
+        // curl_ = curl_easy_init(); // reinit the curl object (fix bad_allow bug)
+
         curl_easy_setopt(curl_, CURLOPT_URL, endpoint_.c_str()); //NOLINT
         curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "POST"); //NOLINT
         curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.c_str()); //NOLINT
@@ -39,7 +44,7 @@ std::pair<int, std::string> sfdc_client::create_class(const std::string& body)
         if (res != CURLE_OK) {
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
                 << "\n";
-            exit(-1);
+            return {1000, "Generic Error"};
         }
 
         long http_code = 0;
@@ -57,6 +62,7 @@ std::pair<int, std::string> sfdc_client::delete_class(const std::string& class_i
 {
     if (curl_ != nullptr)
     {
+        // curl_ = curl_easy_init(); // reinit the curl object (fix bad_allow bug)
         std::string endpoint = endpoint_ + "/" + class_id;
 
         curl_easy_setopt(curl_, CURLOPT_URL, endpoint.c_str()); //NOLINT
@@ -84,7 +90,7 @@ std::pair<int, std::string> sfdc_client::delete_class(const std::string& class_i
         if(res != CURLE_OK)
         {
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
-            exit(-1);
+            return {1000, "Generic Error"};
         }
     }
     return {0, ""};
@@ -95,43 +101,45 @@ std::tuple<int, std::string, std::string> sfdc_client::login(const std::string& 
     std::string response_string;
     if (curl_ != nullptr)
     {
-      std::string part1 = R"(<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:enterprise.soap.sforce.com"><soapenv:Body><urn:login><urn:username>)";
-      std::string part2 = R"(</urn:username><urn:password>)";
-      std::string part3 = R"(</urn:password></urn:login></soapenv:Body></soapenv:Envelope>)";
+        // curl_ = curl_easy_init(); // reinit the curl object (fix bad_allow bug)
 
-      std::string body = part1 + username + part2 + password + part3;
+        std::string part1 = R"(<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:enterprise.soap.sforce.com"><soapenv:Body><urn:login><urn:username>)";
+        std::string part2 = R"(</urn:username><urn:password>)";
+        std::string part3 = R"(</urn:password></urn:login></soapenv:Body></soapenv:Envelope>)";
 
-      curl_easy_setopt(curl_, CURLOPT_URL, login_url.c_str());   // NOLINT
-      curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "POST");    // NOLINT
-      curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.c_str()); // NOLINT
+        std::string body = part1 + username + part2 + password + part3;
 
-      struct curl_slist *headers = nullptr;
+        curl_easy_setopt(curl_, CURLOPT_URL, login_url.c_str());   // NOLINT
+        curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "POST");    // NOLINT
+        curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.c_str()); // NOLINT
 
-      headers = curl_slist_append(headers, "SOAPAction: ''");
-      headers =
-          curl_slist_append(headers, "Content-Type: text/xml;charset=UTF-8");
+        struct curl_slist *headers = nullptr;
 
-      curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers); // NOLINT
+        headers = curl_slist_append(headers, "SOAPAction: ''");
+        headers =
+            curl_slist_append(headers, "Content-Type: text/xml;charset=UTF-8");
 
-      curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());  // NOLINT
-      curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_fun);    // NOLINT
-      curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response_string); // NOLINT
+        curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers); // NOLINT
 
-      CURLcode res = curl_easy_perform(curl_);
+        curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size());  // NOLINT
+        curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_fun);    // NOLINT
+        curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response_string); // NOLINT
 
-      long http_code = 0;
-      curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code); // NOLINT
+        CURLcode res = curl_easy_perform(curl_);
 
-      if ( http_code != 200 )
-      {
-          return {http_code, "", ""};
-      }
+        long http_code = 0;
+        curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code); // NOLINT
 
-      if (res != CURLE_OK)
-      {
-          std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
-          exit(-1);
-      }
+        if ( http_code != 200 )
+        {
+            return {http_code, "", ""};
+        }
+
+        if (res != CURLE_OK)
+        {
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
+            return {1000, "", ""};
+        }
     }
     return parse_login(response_string);
 }
