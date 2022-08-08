@@ -38,6 +38,10 @@ class resource
 
         std::string get_orgid() const;
 
+        void set_classid(const std::string& classid);
+
+        void set_orgid(const std::string& orgid);
+
     private:
         std::string classname_;
         std::string classid_;
@@ -66,13 +70,11 @@ class resource_repo
 
         std::unordered_map<std::string, resource> get_repo() const;
 
-        bool write_to_file() const;
+        bool update_login_details(const std::string& token, const std::string& url);
 
         bool delete_from_repo(const std::string& identifier);
 
         bool insert(const std::string& identifier, const resource& res);
-
-        std::tuple<std::string, std::string> read_login_details() const;
 
         std::tuple<std::string, std::string> get_login_details() const;
 
@@ -82,6 +84,12 @@ class resource_repo
         std::unordered_map<std::string, resource> repo_;
         std::string filepath_;
         std::tuple<std::string, std::string> login_details_;
+
+        std::tuple<std::string, std::string> read_login_details() const;
+
+        bool write_to_file() const;
+
+        static std::string convert_to_tooling_url(const std::string& url);
 };
 
 #endif
