@@ -15,14 +15,14 @@ sfdc_client::~sfdc_client()
     }
 }
 
-std::pair<int, std::string> sfdc_client::create_class(const std::string& body)
+std::pair<int, std::string> sfdc_client::tooling_post(const std::string& path, const std::string& body)
 {
     std::string response_string;
     if (curl_ != nullptr)
     {
-        // curl_ = curl_easy_init(); // reinit the curl object (fix bad_allow bug)
+        // curl_ = curl_easy_init(); // reinit(endpoint_+path).c_str() the curl object (fix bad_allow bug)
 
-        curl_easy_setopt(curl_, CURLOPT_URL, endpoint_.c_str()); //NOLINT
+        curl_easy_setopt(curl_, CURLOPT_URL, (endpoint_+path).c_str()); //NOLINT
         curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "POST"); //NOLINT
         curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.c_str()); //NOLINT
 

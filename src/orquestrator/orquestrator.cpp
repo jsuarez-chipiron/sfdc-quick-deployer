@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "orquestrator.h"
-#include "../resource_reader/resource_reader.h"
+#include "../body_creator/body_creator.h"
 
 int orquestrator::execute(int argc, char** argv)
 {
@@ -49,37 +49,49 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
 
     if ( resource_repo_.get_repo().contains(identifier) )
     {
-        // si existe lo borramos antes
-        auto updatable_resource = resource_repo_.get_repo().at(identifier);
+        // update the resource
+        const auto [metacontainer_code, metacontainer_id] = sfdc_client_.tooling_post("tooling/sobjects/MetadataContainer", 
+                body_creator::metadata_container_body());
 
-        const auto [code, message] = sfdc_client_.delete_class(updatable_resource.get_classid());
-
-        if ( code != 0 )
+        if ( metacontainer_code != 0 )
         {
-            std::cerr << "ERROR: " << message << "\n";
+            std::cerr << "ERROR: " << metacontainer_id << "\n";
             return;
         }
 
-        resource_repo_.delete_from_repo(identifier);
+        auto updatable_resource = resource_repo_.get_repo().at(identifier);
+
+        std::cout << "message: " << metacontainer_id << "\n";
+
+        const auto [apex_code, apex_id] = sfdc_client_.tooling_post("tooling/sobjects/ApexClassMember", 
+                body_creator::apexmember_body());
+
+        // resource_repo_.delete_from_repo(identifier);
     }
-
-    resource_reader r_reader(resource_filepath);
-    const auto [code, message] = sfdc_client_.create_class(r_reader.create_body());
-
-    if ( code != 0 )
+    else
     {
-        std::cerr << "ERROR: " << message << "\n";
-        return;
+        std::cout << "javier => " << "kaka" << "\n";
     }
 
-    resource new_resource(filename, message, orgid);
-    if ( !resource_repo_.insert(identifier, new_resource) )
-    {
-        std::cerr << "ERROR: inserting in the repo\n";
-        return;
-    }
 
-    std::cout << "Resource uploaded correctly: [" << message << "]\n";
+
+    // body_creator r_reader(resource_filepath);
+    // const auto [code, message] = sfdc_client_.create_class(r_reader.create_body());
+
+    // if ( code != 0 )
+    // {
+    //     std::cerr << "ERROR: " << message << "\n";
+    //     return;
+    // }
+
+    // resource new_resource(filename, message, orgid);
+    // if ( !resource_repo_.insert(identifier, new_resource) )
+    // {
+    //     std::cerr << "ERROR: inserting in the repo\n";
+    //     return;
+    // }
+
+    // std::cout << "Resource uploaded correctly: [" << message << "]\n";
 }
 
 std::string orquestrator::get_filename_from_filepath(const std::string& filepath)

@@ -41,7 +41,7 @@ class sfdc_client
 
         ~sfdc_client();
 
-        std::pair<int, std::string> create_class(const std::string& body);
+        std::pair<int, std::string> tooling_post(const std::string& path, const std::string& body);
 
         std::pair<int, std::string> delete_class(const std::string& class_id);
 
