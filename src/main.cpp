@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     resource_repo r_repo(filepath);
     sfdc_client client(r_repo.get_login_details());
-    // resource_reader r_reader(classpath);
+    // body_creator r_reader(classpath);
 
     orquestrator orq(std::move(client), std::move(r_repo));
 
