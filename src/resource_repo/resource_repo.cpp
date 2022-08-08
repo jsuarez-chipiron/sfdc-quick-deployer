@@ -8,12 +8,10 @@ resource_repo::resource_repo(const std::string& filepath): filepath_(filepath)
 {
     std::ifstream infile(filepath);
 
-    resource_serdes re_serdes;
-
     std::string line;
     while (std::getline(infile, line))
     {
-        auto res = re_serdes.deserialize(line);
+        auto res = resource_serdes::deserialize(line);
         repo_.insert({res.get_classname()+res.get_orgid(), res});
     }
 
@@ -22,7 +20,7 @@ resource_repo::resource_repo(const std::string& filepath): filepath_(filepath)
     if ( std::get<0>(login_details).empty() )
     {
         std::cerr << "ERROR: invalid login config\n";
-        exit(-1);
+        return;
     }
     login_details_ = login_details;
 }
@@ -61,10 +59,9 @@ void resource_repo::print_repo() const
 bool resource_repo::write_to_file() const
 {
     std::ofstream out(filepath_);
-    resource_serdes re_serdes;
     for (const auto& item: repo_)
     {
-        out << re_serdes.serialize(item.second) << "\n";
+        out << resource_serdes::serialize(item.second) << "\n";
     }
     out.close();
     return true;

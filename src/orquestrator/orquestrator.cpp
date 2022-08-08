@@ -26,7 +26,7 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
         if ( code != 0 )
         {
             std::cerr << "ERROR: " << message << "\n";
-            exit(-1); //NOLINT
+            return;
         }
 
         resource_repo_.delete_from_repo(identifier);
@@ -37,14 +37,14 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
     if ( code != 0 )
     {
         std::cerr << "ERROR: " << message << "\n";
-        exit(-1); //NOLINT
+        return;
     }
 
     resource new_resource(filename, message, orgid);
     if ( !resource_repo_.insert(identifier, new_resource) )
     {
         std::cerr << "ERROR: inserting in the repo\n";
-        exit(-1); //NOLINT
+        return;
     }
 
     std::cout << "Resource uploaded correctly: [" << message << "]\n";
