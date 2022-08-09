@@ -15,17 +15,17 @@ int orquestrator::execute(int argc, char** argv)
 
     if ( is_login )
     {
-        this->update_login(login_url, username, password);
+        return this->update_login(login_url, username, password);
     }
     else
     {
-        this->upload_resource(resource_path);
+        return this->upload_resource(resource_path);
     }
 
     return 0;
 }
 
-void orquestrator::update_login(const std::string& login_url, const std::string& username, const std::string& password)
+int orquestrator::update_login(const std::string& login_url, const std::string& username, const std::string& password)
 {
     std::string full_login_url = login_url+"/services/Soap/c/55.0";
 
@@ -35,13 +35,14 @@ void orquestrator::update_login(const std::string& login_url, const std::string&
         if ( resource_repo_.update_login_details(token, url) )
         {
             std::cout << "Login details updated correctly\n";
-            return;
+            return 1;
         }
     }
     std::cerr << "ERROR: updating login details\n";
+    return 0;
 }
 
-void orquestrator::upload_resource(const std::string& resource_filepath)
+int orquestrator::upload_resource(const std::string& resource_filepath)
 {
     std::string orgid = std::get<1>(resource_repo_.get_login_details());
     std::string filename = get_filename_from_filepath(resource_filepath);
@@ -59,7 +60,7 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
         if ( metacontainer_code != 0 )
         {
             std::cerr << "ERROR creating MetadataContainer: " << metacontainer_id << "\n";
-            return;
+            return 1;
         }
 
         auto updatable_resource = resource_repo_.get_repo().at(identifier);
@@ -73,10 +74,39 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
         if ( async_code != 0 )
         {
             std::cerr << "ERROR: creating ContainerAsyncRequest " << async_id << "\n";
-            return;
+            return 1;
+        }
+        
+        std::string response_body;
+        std::string last_state;
+
+        for (size_t i=0; i<20; ++i)
+        {
+            const auto [async_poll_code, async_body] = sfdc_client_.tooling_get("tooling/sobjects/ContainerAsyncRequest", async_id);
+
+            if ( async_poll_code != 0 )
+            {
+                std::cerr << "ERROR: polling ContainerAsyncRequest " << async_body << "\n";
+                return 1;
+            }
+
+            auto state = get_state_async_request(async_body);
+
+            if ( state == "Completed" || state == "Failed" )
+            {
+                last_state = state;
+                response_body = async_body;
+                break;
+            }
         }
 
-        std::cout << "Resource updated correctly ==> [async_id: " << async_id <<"]\n";
+        if ( last_state == "Failed" )
+        {
+            std::cerr << "ERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]\n";
+            return 1;
+        }
+        std::cout << "Resource update correctly ==> [async_id: " << async_id << "]\n";
+        return 0;
     }
     else
     {
@@ -86,19 +116,19 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
         if ( code != 0 )
         {
             std::cerr << "ERROR: " << message << "\n";
-            return;
+            return 1;
         }
 
         resource new_resource(filename, message, orgid);
         if ( !resource_repo_.insert(identifier, new_resource) )
         {
             std::cerr << "ERROR: inserting in the repo\n";
-            return;
+            return 1;
         }
 
         std::cout << "Resource created correctly ==> [resource_id: " << message << "]\n";
+        return 0;
     }
-
 }
 
 std::string orquestrator::get_filename_from_filepath(const std::string& filepath)
@@ -116,6 +146,44 @@ std::string orquestrator::get_filename_from_filepath(const std::string& filepath
     if ( found_dot == std::string::npos ) { return ""; }
 
     return filepath.substr(begin, found_dot-begin);
+}
+
+std::string orquestrator::get_state_async_request(const std::string& body)
+{
+    auto found = body.find("State");
+    if ( found == std::string::npos )
+    {
+        return "";
+    }
+
+    auto partial = body.substr(found+7);
+
+    auto found_end = partial.find(',');
+    if ( found_end == std::string::npos )
+    {
+        return "";
+    }
+
+    return partial.substr(1, found_end-2);
+}
+
+std::string orquestrator::get_problem_async_request(const std::string& body)
+{
+    auto found = body.find(R"(,"problem":)");
+    if ( found == std::string::npos )
+    {
+        return "";
+    }
+
+    auto partial = body.substr(found+11);
+
+    auto found_end = partial.find(',');
+    if ( found_end == std::string::npos )
+    {
+        return "";
+    }
+
+    return partial.substr(1, found_end-2);
 }
 
 std::tuple<bool, bool, std::string, std::string, std::string, std::string> orquestrator::parse_flags(int argc, char** argv)
@@ -194,3 +262,4 @@ std::tuple<bool, bool, std::string, std::string, std::string, std::string> orque
         (r_value==nullptr)?"":std::string(r_value),
         (f_value==nullptr)?"":std::string(f_value)};
 }
+
