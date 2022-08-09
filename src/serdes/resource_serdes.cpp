@@ -1,4 +1,3 @@
-// #include <string>
 #include "resource_serdes.h"
 
 resource resource_serdes::deserialize(const std::string& line)
