@@ -58,6 +58,50 @@ std::pair<int, std::string> sfdc_client::tooling_post(const std::string& path, c
     return {0, parse_ok(response_string)};
 }
 
+std::pair<int, std::string> sfdc_client::tooling_get(const std::string& path, const std::string resource_id)
+{
+    std::string response_string;
+    if (curl_ != nullptr)
+    {
+        // curl_ = curl_easy_init(); // reinit(endpoint_+path).c_str() the curl object (fix bad_allow bug)
+
+        curl_easy_setopt(curl_, CURLOPT_URL, (endpoint_+path+"/"+resource_id).c_str()); //NOLINT
+        curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "GET"); //NOLINT
+        // curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, body.c_str()); //NOLINT
+
+        struct curl_slist *headers = nullptr;
+
+        std::string auth_header = "Authorization: Bearer " + token_;
+
+        headers = curl_slist_append(headers, auth_header.c_str());
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+
+        curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers); //NOLINT
+
+        // curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, body.size()); //NOLINT
+        curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_fun); //NOLINT
+        curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response_string); //NOLINT
+
+        CURLcode res = curl_easy_perform(curl_);
+
+        if (res != CURLE_OK) {
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
+                << "\n";
+            return {1000, "Generic Error"};
+        }
+
+        long http_code = 0;
+
+        curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &http_code); //NOLINT
+
+        if ( http_code != 200 )
+        {
+            return {http_code, parse_error(response_string)};
+        }
+    }
+    return {0, response_string};
+}
+
 std::pair<int, std::string> sfdc_client::delete_class(const std::string& class_id)
 {
     if (curl_ != nullptr)
