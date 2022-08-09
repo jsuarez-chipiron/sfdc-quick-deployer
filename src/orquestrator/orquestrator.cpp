@@ -47,6 +47,9 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
     std::string filename = get_filename_from_filepath(resource_filepath);
     std::string identifier = filename + orgid;
 
+    body_creator r_reader(resource_filepath);
+    std::string body = r_reader.parse_body();
+
     if ( resource_repo_.get_repo().contains(identifier) )
     {
         // update the resource
@@ -55,43 +58,47 @@ void orquestrator::upload_resource(const std::string& resource_filepath)
 
         if ( metacontainer_code != 0 )
         {
-            std::cerr << "ERROR: " << metacontainer_id << "\n";
+            std::cerr << "ERROR creating MetadataContainer: " << metacontainer_id << "\n";
             return;
         }
 
         auto updatable_resource = resource_repo_.get_repo().at(identifier);
 
-        std::cout << "message: " << metacontainer_id << "\n";
-
         const auto [apex_code, apex_id] = sfdc_client_.tooling_post("tooling/sobjects/ApexClassMember", 
-                body_creator::apexmember_body());
+                body_creator::apexmember_body(updatable_resource.get_classid(), metacontainer_id, body));
 
-        // resource_repo_.delete_from_repo(identifier);
+        const auto [async_code, async_id] = sfdc_client_.tooling_post("tooling/sobjects/ContainerAsyncRequest", 
+                body_creator::async_request_body(metacontainer_id));
+
+        if ( async_code != 0 )
+        {
+            std::cerr << "ERROR: creating ContainerAsyncRequest " << async_id << "\n";
+            return;
+        }
+
+        std::cout << "Resource updated correctly ==> [async_id: " << async_id <<"]\n";
     }
     else
     {
-        std::cout << "javier => " << "kaka" << "\n";
+        const auto [code, message] = sfdc_client_.tooling_post("tooling/sobjects/ApexClass",
+                 body_creator::insert_body(body));
+
+        if ( code != 0 )
+        {
+            std::cerr << "ERROR: " << message << "\n";
+            return;
+        }
+
+        resource new_resource(filename, message, orgid);
+        if ( !resource_repo_.insert(identifier, new_resource) )
+        {
+            std::cerr << "ERROR: inserting in the repo\n";
+            return;
+        }
+
+        std::cout << "Resource created correctly ==> [resource_id: " << message << "]\n";
     }
 
-
-
-    // body_creator r_reader(resource_filepath);
-    // const auto [code, message] = sfdc_client_.create_class(r_reader.create_body());
-
-    // if ( code != 0 )
-    // {
-    //     std::cerr << "ERROR: " << message << "\n";
-    //     return;
-    // }
-
-    // resource new_resource(filename, message, orgid);
-    // if ( !resource_repo_.insert(identifier, new_resource) )
-    // {
-    //     std::cerr << "ERROR: inserting in the repo\n";
-    //     return;
-    // }
-
-    // std::cout << "Resource uploaded correctly: [" << message << "]\n";
 }
 
 std::string orquestrator::get_filename_from_filepath(const std::string& filepath)
