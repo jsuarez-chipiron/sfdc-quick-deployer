@@ -15,11 +15,10 @@ int main(int argc, char *argv[])
         return str.c_str();
     });
 
-    std::string filepath = "/home/javier/Tech/c++/sfdc-quick-deployer/resources/dictionary.dat"; //TODO: put the dictionary in a config dir
+    std::string directory = "/home/javier/Tech/c++/sfdc-quick-deployer/resources/dictionary.dat"; //TODO: put the dictionary in a config dir
 
-    resource_repo r_repo(filepath);
+    resource_repo r_repo(directory);
     sfdc_client client(r_repo.get_login_details());
-    // body_creator r_reader(classpath);
 
     orquestrator orq(std::move(client), std::move(r_repo));
 
