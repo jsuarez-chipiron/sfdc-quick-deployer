@@ -22,11 +22,16 @@ class body_creator
 
         std::string get_filepath() const;
 
-        std::string create_body() const;
+        std::string parse_body() const;
+
+        static std::string insert_body(const std::string& body);
 
         static std::string metadata_container_body();
 
-        static std::string apexmember_body();
+        static std::string apexmember_body(const std::string& content_entity_id, 
+                const std::string& meta_container_id, const std::string& body);
+
+        static std::string async_request_body(const std::string& meta_container_id);
 
     private:
         std::string filepath_;

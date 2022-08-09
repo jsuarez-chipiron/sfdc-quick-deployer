@@ -97,7 +97,7 @@ std::string resource_repo::convert_to_tooling_url(const std::string& url)
     auto found = url.find("Soap/c");
     if ( found != std::string::npos )
     {
-        return url.substr(0, found) + "data/v55.0/tooling/sobjects/ApexClass";
+        return url.substr(0, found) + "data/v55.0/";
     }
     return "";
 }
