@@ -105,7 +105,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
             std::cerr << "ERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]\n";
             return 1;
         }
-        std::cout << "Resource update correctly ==> [async_id: " << async_id << "]\n";
+        std::cout << "Resource update correctly ==> [async_id: " << async_id << "]  --  ";
         return 0;
     }
     else
@@ -126,7 +126,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
             return 1;
         }
 
-        std::cout << "Resource created correctly ==> [resource_id: " << message << "]\n";
+        std::cout << "Resource created correctly ==> [resource_id: " << message << "]  --  ";
         return 0;
     }
 }
