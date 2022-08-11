@@ -10,7 +10,7 @@ class resource
     public:
         resource() = default;
 
-        explicit resource(std::string classname, std::string classid, std::string orgid):
+        resource(std::string classname, std::string classid, std::string orgid):
             classname_(std::move(classname)),
             classid_(std::move(classid)),
             orgid_(std::move(orgid))
@@ -57,17 +57,19 @@ class resource_repo
 
         ~resource_repo() = default;
 
-        std::unordered_map<std::string, resource> get_repo() const;
+        std::unordered_map<std::string, resource>& get_repo();
 
         bool update_login_details(const std::string& token, const std::string& url);
 
         bool delete_from_repo(const std::string& identifier);
 
-        bool insert(const std::string& identifier, const resource& res);
+        bool insert_and_write_to_file(const std::string& identifier, const resource& res);
 
         std::tuple<std::string, std::string> get_login_details() const;
 
         void print_repo() const;
+
+        bool write_to_file() const;
 
     private:
         std::unordered_map<std::string, resource> repo_;
@@ -75,8 +77,6 @@ class resource_repo
         std::tuple<std::string, std::string> login_details_;
 
         std::tuple<std::string, std::string> read_login_details() const;
-
-        bool write_to_file() const;
 
         static std::string convert_to_tooling_url(const std::string& url);
 };

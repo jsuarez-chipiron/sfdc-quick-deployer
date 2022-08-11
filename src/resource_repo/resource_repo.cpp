@@ -30,7 +30,7 @@ std::tuple<std::string, std::string> resource_repo::get_login_details() const
     return login_details_;
 }
 
-std::unordered_map<std::string, resource> resource_repo::get_repo() const
+std::unordered_map<std::string, resource>& resource_repo::get_repo()
 {
     return repo_;
 }
@@ -86,7 +86,7 @@ bool resource_repo::delete_from_repo(const std::string& identifier)
     return write_to_file();
 }
 
-bool resource_repo::insert(const std::string& identifier, const resource& res)
+bool resource_repo::insert_and_write_to_file(const std::string& identifier, const resource& res)
 {
     auto insert_result = repo_.insert({identifier, res});
     return insert_result.second && write_to_file();

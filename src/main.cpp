@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
     sfdc_client client(r_repo.get_login_details());
 
     orquestrator orq(std::move(client), std::move(r_repo));
-
     auto retcode = orq.execute(converted_argv.size(), const_cast<char**>(converted_argv.data())); //NOLINT
+
     std::cout << t.elapsed() << "ms\n";
 
     return retcode;

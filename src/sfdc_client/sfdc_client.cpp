@@ -58,7 +58,7 @@ std::pair<int, std::string> sfdc_client::tooling_post(const std::string& path, c
     return {0, parse_ok(response_string)};
 }
 
-std::pair<int, std::string> sfdc_client::tooling_get(const std::string& path, const std::string resource_id)
+std::pair<int, std::string> sfdc_client::tooling_get(const std::string& path, const std::string& resource_id)
 {
     std::string response_string;
     if (curl_ != nullptr)

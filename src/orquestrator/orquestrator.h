@@ -2,6 +2,8 @@
 #define ORQUESTRATOR_H
 
 #include <iostream>
+#include <vector>
+#include <string_view>
 #include "../sfdc_client/sfdc_client.h"
 #include "../resource_repo/resource_repo.h"
 #include "../body_creator/body_creator.h"
@@ -20,16 +22,20 @@ class orquestrator
 
         int upload_resource(const std::string& resource_filepath);
 
+        int get_all_resources(const std::string& orgid);
+
     private:
         sfdc_client sfdc_client_;
         resource_repo resource_repo_;
 
-        static std::tuple<bool, bool, std::string, std::string, std::string, std::string> parse_flags(int argc, char** argv);
+        static std::tuple<bool, bool, bool, std::string, std::string, std::string, std::string> parse_flags(int argc, char** argv);
 
         static std::string get_filename_from_filepath(const std::string& filepath);
 
         static std::string get_state_async_request(const std::string& body);
 
         static std::string get_problem_async_request(const std::string& body);
+
+        static std::vector<resource> get_all_resources_parser(std::string_view body, const std::string& orgid);
 };
 #endif
