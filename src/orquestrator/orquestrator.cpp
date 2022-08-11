@@ -6,7 +6,7 @@
 
 int orquestrator::execute(int argc, char** argv)
 {
-    const auto[ok, is_login, is_get_all, username, password, login_url, resource_path] = parse_flags(argc, argv);
+    const auto[ok, is_login, is_get_all, is_download, username, password, login_url, resource_path] = parse_flags(argc, argv);
 
     if ( !ok ) 
     {
@@ -23,19 +23,13 @@ int orquestrator::execute(int argc, char** argv)
         return this->get_all_resources(std::get<1>(resource_repo_.get_login_details()));
     }
 
+    if ( is_download )
+    {
+        return this->download_resource(resource_path);
+    }
+
     return this->upload_resource(resource_path);
 
-    // const auto [code, body] = sfdc_client_.tooling_get("tooling/sobjects/ApexClass", "01p0800000EccHAAAZ");
-
-    // if ( code != 0 )
-    // {
-    //     std::cerr << "ERROR: polling ContainerAsyncRequest " << body << "\n";
-    //     return 1;
-    // }
-
-    // std::cout << "async_body: " << body << "\n";
-
-    // return 0;
 }
 
 int orquestrator::update_login(const std::string& login_url, const std::string& username, const std::string& password)
@@ -142,6 +136,42 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
         std::cout << "Resource created correctly ==> [resource_id: " << message << "]  --  ";
         return 0;
     }
+}
+
+int orquestrator::download_resource(const std::string& resource_filepath)
+{
+    // TODO: poner este código junto con el de upload_resource en un helper
+    std::string orgid = std::get<1>(resource_repo_.get_login_details());
+    std::string filename = get_filename_from_filepath(resource_filepath);
+    std::string identifier = filename + orgid;
+    // END TODO
+
+    std::string class_id;
+    try
+    {
+        class_id = resource_repo_.get_repo().at(identifier).get_classid();
+    }
+    catch (std::out_of_range&)
+    {
+        std::cerr << "ERROR: the resource doesn't exist in the dictionary\n";
+        return 1;
+    }
+
+    const auto [code, body] = sfdc_client_.tooling_get("tooling/sobjects/ApexClass", class_id);
+
+    if ( code != 0 )
+    {
+        std::cerr << "ERROR: retrieving resource\n";
+        return 1;
+    }
+
+    if ( write_class_to_file(resource_filepath, req_res_utils::parse_class_response(body)+"\\n") )
+    {
+        std::cout << "The resource has been retrieved correctly ==> [resource_id: " << class_id << "]  -- ";
+        return 0;
+    }
+
+    return 1;
 }
 
 int orquestrator::get_all_resources(const std::string& orgid)
@@ -264,10 +294,28 @@ std::string orquestrator::get_problem_async_request(const std::string& body)
     return partial.substr(1, found_end-2);
 }
 
-std::tuple<bool, bool, bool, std::string, std::string, std::string, std::string> orquestrator::parse_flags(int argc, char** argv)
+bool orquestrator::write_class_to_file(const std::string& filename, std::string file_content)
+{
+    std::ofstream out(filename);
+    std::string delimiter = "\\n";
+
+    size_t pos = 0;
+    std::string token;
+    while ((pos = file_content.find(delimiter)) != std::string::npos) {
+        token = file_content.substr(0, pos);
+        out << token << "\n";
+        file_content.erase(0, pos + delimiter.length());
+    }
+
+    out.close();
+    return true;
+}
+
+std::tuple<bool, bool, bool, bool, std::string, std::string, std::string, std::string> orquestrator::parse_flags(int argc, char** argv)
 {
     int l_flag = 0;
     int g_flag = 0;
+    int d_flag = 0;
     char* u_value = nullptr;
     char* p_value = nullptr;
     char* r_value = nullptr;
@@ -276,7 +324,7 @@ std::tuple<bool, bool, bool, std::string, std::string, std::string, std::string>
 
     opterr = 0;
 
-    while ((c = getopt (argc, argv, "glu:p:r:f:")) != -1) //NOLINT
+    while ((c = getopt (argc, argv, "dglu:p:r:f:")) != -1) //NOLINT
     {
         switch (c)
         {
@@ -285,6 +333,9 @@ std::tuple<bool, bool, bool, std::string, std::string, std::string, std::string>
                 break;
             case 'g':
                 g_flag = 1;
+                break;
+            case 'd':
+                d_flag = 1;
                 break;
             case 'u':
                 u_value = optarg;
@@ -332,13 +383,13 @@ std::tuple<bool, bool, bool, std::string, std::string, std::string, std::string>
                         }
                     }
                 }
-                return {false, false, false, "", "", "", ""};
+                return {false, false, false, false, "", "", "", ""};
             default:
                 abort ();
         }
     }
 
-    return {true, (l_flag==1), (g_flag==1),
+    return {true, (l_flag==1), (g_flag==1), (d_flag==1),
         (u_value==nullptr)?"":std::string(u_value),
         (p_value==nullptr)?"":std::string(p_value),
         (r_value==nullptr)?"":std::string(r_value),

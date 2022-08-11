@@ -59,3 +59,21 @@ std::string req_res_utils::async_request_body(const std::string& meta_container_
 
     return sst.str();
 }
+
+std::string req_res_utils::parse_class_response(std::string_view body)
+{
+    auto partial = body;
+    auto found_begin = body.find(R"("Body":)");
+    if ( found_begin != std::string_view::npos )
+    {
+        partial = partial.substr(found_begin+8);
+    }
+    auto found_end = partial.find(R"("LengthWithoutComments":)");
+    if ( found_end != std::string_view::npos )
+    {
+        partial = partial.substr(0, found_end-2);
+        return std::string(partial);
+    }
+
+    return "";
+}

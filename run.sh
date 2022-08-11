@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cd build && make && ./sfdc-quick-deployer -f ../resources/class.cls
+cd build && make && ./sfdc-quick-deployer -d -f ../resources/MySuperCoolTest.cls

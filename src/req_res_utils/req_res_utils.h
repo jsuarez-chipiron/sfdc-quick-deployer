@@ -2,6 +2,7 @@
 #define REQ_RES_UTILS_H
 
 #include <iostream>
+#include <string_view>
 
 class req_res_utils
 {
@@ -32,6 +33,8 @@ class req_res_utils
                 const std::string& meta_container_id, const std::string& body);
 
         static std::string async_request_body(const std::string& meta_container_id);
+
+        static std::string parse_class_response(std::string_view body);
 
     private:
         std::string filepath_;
