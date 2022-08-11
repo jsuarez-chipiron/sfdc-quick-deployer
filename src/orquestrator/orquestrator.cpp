@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "orquestrator.h"
-#include "../body_creator/body_creator.h"
+#include "../req_res_utils/req_res_utils.h"
 
 int orquestrator::execute(int argc, char** argv)
 {
@@ -24,6 +24,18 @@ int orquestrator::execute(int argc, char** argv)
     }
 
     return this->upload_resource(resource_path);
+
+    // const auto [code, body] = sfdc_client_.tooling_get("tooling/sobjects/ApexClass", "01p0800000EccHAAAZ");
+
+    // if ( code != 0 )
+    // {
+    //     std::cerr << "ERROR: polling ContainerAsyncRequest " << body << "\n";
+    //     return 1;
+    // }
+
+    // std::cout << "async_body: " << body << "\n";
+
+    // return 0;
 }
 
 int orquestrator::update_login(const std::string& login_url, const std::string& username, const std::string& password)
@@ -49,14 +61,14 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
     std::string filename = get_filename_from_filepath(resource_filepath);
     std::string identifier = filename + orgid;
 
-    body_creator r_reader(resource_filepath);
+    req_res_utils r_reader(resource_filepath);
     std::string body = r_reader.parse_body();
 
     if ( resource_repo_.get_repo().contains(identifier) )
     {
         // update the resource
         const auto [metacontainer_code, metacontainer_id] = sfdc_client_.tooling_post("tooling/sobjects/MetadataContainer", 
-                body_creator::metadata_container_body());
+                req_res_utils::metadata_container_body());
 
         if ( metacontainer_code != 0 )
         {
@@ -67,10 +79,10 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
         auto updatable_resource = resource_repo_.get_repo().at(identifier);
 
         const auto [apex_code, apex_id] = sfdc_client_.tooling_post("tooling/sobjects/ApexClassMember", 
-                body_creator::apexmember_body(updatable_resource.get_classid(), metacontainer_id, body));
+                req_res_utils::apexmember_body(updatable_resource.get_classid(), metacontainer_id, body));
 
         const auto [async_code, async_id] = sfdc_client_.tooling_post("tooling/sobjects/ContainerAsyncRequest", 
-                body_creator::async_request_body(metacontainer_id));
+                req_res_utils::async_request_body(metacontainer_id));
 
         if ( async_code != 0 )
         {
@@ -112,7 +124,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
     else
     {
         const auto [code, message] = sfdc_client_.tooling_post("tooling/sobjects/ApexClass",
-                 body_creator::insert_body(body));
+                 req_res_utils::insert_body(body));
 
         if ( code != 0 )
         {

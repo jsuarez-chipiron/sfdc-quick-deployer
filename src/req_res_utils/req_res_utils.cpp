@@ -4,14 +4,14 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "body_creator.h"
+#include "req_res_utils.h"
 
-std::string body_creator::get_filepath() const
+std::string req_res_utils::get_filepath() const
 {
     return filepath_;
 }
 
-std::string body_creator::parse_body() const
+std::string req_res_utils::parse_body() const
 {
     std::string ret;
     std::ifstream infile(filepath_);
@@ -25,14 +25,14 @@ std::string body_creator::parse_body() const
     return ret;
 }
 
-std::string body_creator::insert_body(const std::string& body)
+std::string req_res_utils::insert_body(const std::string& body)
 {
     std::stringstream ss;
     ss << R"({"Body": ")" << body << "\"}";
     return ss.str();
 }
 
-std::string body_creator::metadata_container_body()
+std::string req_res_utils::metadata_container_body()
 {
     auto millisec_since_epoch = duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::stringstream ss;
@@ -40,7 +40,7 @@ std::string body_creator::metadata_container_body()
     return ss.str();
 }
 
-std::string body_creator::apexmember_body(const std::string& content_entity_id, 
+std::string req_res_utils::apexmember_body(const std::string& content_entity_id, 
         const std::string& meta_container_id, const std::string& body)
 {
     std::stringstream sst;
@@ -51,7 +51,7 @@ std::string body_creator::apexmember_body(const std::string& content_entity_id,
     return sst.str();
 }
 
-std::string body_creator::async_request_body(const std::string& meta_container_id)
+std::string req_res_utils::async_request_body(const std::string& meta_container_id)
 {
     std::stringstream sst;
     sst << R"({"IsCheckOnly": false, "MetadataContainerId": ")" << meta_container_id

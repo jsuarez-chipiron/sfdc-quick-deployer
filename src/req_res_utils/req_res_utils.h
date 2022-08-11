@@ -1,22 +1,22 @@
-#ifndef BODY_CREATOR_H
-#define BODY_CREATOR_H
+#ifndef REQ_RES_UTILS_H
+#define REQ_RES_UTILS_H
 
 #include <iostream>
 
-class body_creator
+class req_res_utils
 {
     public:
-        explicit body_creator(std::string filepath): filepath_(std::move(filepath)) {}
+        explicit req_res_utils(std::string filepath): filepath_(std::move(filepath)) {}
 
-        body_creator(const body_creator& rhs) = delete;
+        req_res_utils(const req_res_utils& rhs) = delete;
 
-        body_creator(body_creator&& rhs) = default;
+        req_res_utils(req_res_utils&& rhs) = default;
 
-        body_creator& operator=(const body_creator& rhs) = delete;
+        req_res_utils& operator=(const req_res_utils& rhs) = delete;
 
-        body_creator& operator=(body_creator&& rhs) = default;
+        req_res_utils& operator=(req_res_utils&& rhs) = default;
 
-        ~body_creator() = default;
+        ~req_res_utils() = default;
 
         void print_repo() const;
 
