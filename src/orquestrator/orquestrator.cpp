@@ -41,12 +41,12 @@ int orquestrator::update_login(const std::string& login_url, const std::string& 
     {
         if ( resource_repo_.update_login_details(token, url) )
         {
-            std::cout << "Login details updated correctly\n";
-            return 1;
+            std::cout << "Login details updated correctly  --  ";
+            return 0;
         }
     }
-    std::cerr << "ERROR: updating login details\n";
-    return 0;
+    std::cerr << "ERROR: updating login details  --  ";
+    return 1;
 }
 
 int orquestrator::upload_resource(const std::string& resource_filepath)
@@ -109,7 +109,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
 
         if ( last_state == "Failed" )
         {
-            std::cerr << "ERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]\n";
+            std::cerr << "ERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]  --  ";
             return 1;
         }
         std::cout << "Resource update correctly ==> [async_id: " << async_id << "]  --  ";
@@ -122,14 +122,14 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
 
         if ( code != 0 )
         {
-            std::cerr << "ERROR: " << message << "\n";
+            std::cerr << "ERROR: " << message << "  --  ";
             return 1;
         }
 
         resource new_resource(filename, message, orgid);
         if ( !resource_repo_.insert_and_write_to_file(identifier, new_resource) )
         {
-            std::cerr << "ERROR: inserting in the repo\n";
+            std::cerr << "ERROR: inserting in the repo --  ";
             return 1;
         }
 

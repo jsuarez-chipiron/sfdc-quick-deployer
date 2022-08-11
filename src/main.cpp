@@ -2,7 +2,9 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <cstring>
 #include <unistd.h>
+#include <pwd.h>
 #include <timer.h>
 #include "sfdc_client/sfdc_client.h"
 #include "orquestrator/orquestrator.h"
@@ -18,7 +20,11 @@ int main(int argc, char *argv[])
         return str.c_str();
     });
 
-    std::string directory = "/home/javier/Tech/c++/sfdc-quick-deployer/resources/dictionary.dat"; //TODO: put the dictionary in a config dir
+    struct passwd *pw = getpwuid(getuid()); //NOLINT
+    char* dic_path = pw->pw_dir;
+
+    strcat(dic_path, "/.config/sfdc-quick-deployer/dictionary.dat");
+    std::string directory = dic_path;
 
     resource_repo r_repo(directory);
     sfdc_client client(r_repo.get_login_details());
