@@ -25,6 +25,19 @@ std::string req_res_utils::parse_body() const
     return ret;
 }
 
+std::string req_res_utils::fix_body(std::string body)
+{
+    char sustitutee = '"';
+ 
+    size_t pos = -1;
+    size_t offset = 0;
+    while ((pos = body.substr(offset).find(sustitutee)) != std::string::npos) {
+        offset += pos+3;
+        body.replace(offset-3, 1, R"(\")");
+    }
+    return body;
+}
+
 std::string req_res_utils::insert_body(const std::string& body)
 {
     std::stringstream ss;

@@ -25,6 +25,8 @@ class req_res_utils
 
         std::string parse_body() const;
 
+        static std::string fix_body(std::string body);
+
         static std::string insert_body(const std::string& body);
 
         static std::string metadata_container_body();
