@@ -185,13 +185,6 @@ int orquestrator::get_all_resources(const std::string& orgid)
     for (const auto& res: all_resources)
     {
         std::string identifier = res.get_classname()+res.get_orgid();
-        // if ( resource_repo_.get_repo().contains(identifier) )
-        // {
-        //     if ( res.get_classid() != resource_repo_.get_repo()[identifier].get_classid() )
-        //     {
-        //         std::cout << res.get_classname() << " overwrited\n";
-        //     }
-        // }
         resource_repo_.get_repo()[identifier] = res;
     }
 
@@ -249,7 +242,6 @@ std::vector<resource> orquestrator::get_all_resources_parser(std::string_view bo
     auto found_id = partial.find(id_begin);
     found_id++;
 
-    int i = 0;
     while ( found_id != std::string_view::npos )
     {
         partial = partial.substr(found_id);
@@ -269,9 +261,6 @@ std::vector<resource> orquestrator::get_all_resources_parser(std::string_view bo
         std::string name = std::string(name_sv.substr(8, name_sv.length()-9));
 
         ret.emplace_back(std::move(name), std::move(id), orgid);
-
-        i++;
-        // if ( i == 10 ) { break; }
     }
 
     return ret;
