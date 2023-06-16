@@ -34,7 +34,7 @@ int orquestrator::execute(int argc, char** argv)
 
 int orquestrator::update_login(const std::string& login_url, const std::string& username, const std::string& password)
 {
-    std::string full_login_url = login_url+"/services/Soap/c/55.0";
+    std::string full_login_url = login_url+"/services/Soap/u/55.0";
 
     const auto [code, url, token] = sfdc_client_.login(full_login_url, username, password);
     if ( code == 0 )

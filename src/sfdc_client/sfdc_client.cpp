@@ -147,7 +147,7 @@ std::tuple<int, std::string, std::string> sfdc_client::login(const std::string& 
     {
         // curl_ = curl_easy_init(); // reinit the curl object (fix bad_allow bug)
 
-        std::string part1 = R"(<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:enterprise.soap.sforce.com"><soapenv:Body><urn:login><urn:username>)";
+        std::string part1 = R"(<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:partner.soap.sforce.com"><soapenv:Body><urn:login><urn:username>)";
         std::string part2 = R"(</urn:username><urn:password>)";
         std::string part3 = R"(</urn:password></urn:login></soapenv:Body></soapenv:Envelope>)";
 
@@ -160,8 +160,7 @@ std::tuple<int, std::string, std::string> sfdc_client::login(const std::string& 
         struct curl_slist *headers = nullptr;
 
         headers = curl_slist_append(headers, "SOAPAction: ''");
-        headers =
-            curl_slist_append(headers, "Content-Type: text/xml;charset=UTF-8");
+        headers = curl_slist_append(headers, "Content-Type: text/xml;charset=UTF-8");
 
         curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers); // NOLINT
 

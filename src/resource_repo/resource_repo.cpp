@@ -94,7 +94,7 @@ bool resource_repo::insert_and_write_to_file(const std::string& identifier, cons
 
 std::string resource_repo::convert_to_tooling_url(const std::string& url)
 {
-    auto found = url.find("Soap/c");
+    auto found = url.find("Soap/u");
     if ( found != std::string::npos )
     {
         return url.substr(0, found) + "data/v55.0/";
