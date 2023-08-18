@@ -62,6 +62,8 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
 
     if ( resource_repo_.get_repo().contains(identifier) )
     {
+        std::cerr << "-";
+
         // update the resource
         const auto [metacontainer_code, metacontainer_id] = sfdc_client_.tooling_post("tooling/sobjects/MetadataContainer", 
                 req_res_utils::metadata_container_body());
@@ -95,7 +97,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
 
             if ( async_poll_code != 0 )
             {
-                std::cerr << "ERROR: polling ContainerAsyncRequest " << async_body << "\n";
+                std::cerr << "\nERROR: polling ContainerAsyncRequest " << async_body << "\n";
                 return 1;
             }
 
@@ -107,14 +109,22 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
                 response_body = async_body;
                 break;
             }
+
+            std::cerr << "\b";
+
+            if ( i % 2 == 0 ) {
+                std::cerr << "|";
+            } else {
+                std::cerr << "-";
+            }
         }
 
         if ( last_state == "Failed" )
         {
-            std::cerr << "ERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]  --  ";
+            std::cerr << "\nERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]  --  ";
             return 1;
         }
-        std::cout << "Resource update correctly ==> [async_id: " << async_id << "]  --  ";
+        std::cout << "\nResource update correctly ==> [async_id: " << async_id << "]  --  ";
         return 0;
     }
     else
