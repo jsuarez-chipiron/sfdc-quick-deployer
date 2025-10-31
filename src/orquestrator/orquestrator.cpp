@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "orquestrator.h"
+#include <nlohmann/json.hpp>
 #include "../req_res_utils/req_res_utils.h"
 
 int orquestrator::execute(int argc, char** argv)
@@ -121,7 +122,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
 
         if ( last_state == "Failed" )
         {
-            std::cerr << "\nERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]  --  ";
+            std::cerr << "\nERROR: Updating resource ==> [ ERRORLIST ]\n" << get_problem_async_request(response_body);
             return 1;
         }
         else if ( last_state != "Completed" )
@@ -283,21 +284,27 @@ std::vector<resource> orquestrator::get_all_resources_parser(std::string_view bo
 
 std::string orquestrator::get_problem_async_request(const std::string& body)
 {
-    auto found = body.find(R"(,"problem":)");
-    if ( found == std::string::npos )
+    using nlohmann::json;
+
+    json json_response = json::parse(body);
+
+    auto failures = json_response["DeployDetails"]["componentFailures"];
+
+    std::string ret;
+	for (auto it = failures.begin(); it != failures.end(); ++it) 
     {
-        return "";
+        auto failure_problem = (*it)["problem"].get<std::string>();
+        auto failure_filename = (*it)["fileName"].get<std::string>();
+        auto failure_line = std::to_string((*it)["lineNumber"].get<int>());
+        auto failure_column = std::to_string((*it)["columnNumber"].get<int>());
+        ret += "force-app/main/default/"; 
+        ret += failure_filename + ':'; 
+        ret += failure_line + ':'; 
+        ret += failure_problem + ':'; 
+        ret += failure_column + '\n';
     }
 
-    auto partial = body.substr(found+11);
-
-    auto found_end = partial.find(',');
-    if ( found_end == std::string::npos )
-    {
-        return "";
-    }
-
-    return partial.substr(1, found_end-2);
+    return ret;
 }
 
 bool orquestrator::write_class_to_file(const std::string& filename, std::string file_content)
