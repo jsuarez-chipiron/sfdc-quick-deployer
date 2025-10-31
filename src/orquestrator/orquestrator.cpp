@@ -91,7 +91,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
         std::string response_body;
         std::string last_state;
 
-        for (size_t i=0; i<20; ++i)
+        for (size_t i=0; i<50; ++i)
         {
             const auto [async_poll_code, async_body] = sfdc_client_.tooling_get("tooling/sobjects/ContainerAsyncRequest", async_id);
 
@@ -122,6 +122,11 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
         if ( last_state == "Failed" )
         {
             std::cerr << "\nERROR: Updating resource ==> [errmsg: " << get_problem_async_request(response_body) << "]  --  ";
+            return 1;
+        }
+        else if ( last_state != "Completed" )
+        {
+            std::cerr << "\nERROR: Updating resource ==> [ errmsg: :::TIMEOUT:::]  --  ";
             return 1;
         }
         std::cout << "\nResource update correctly ==> [async_id: " << async_id << "]  --  ";
