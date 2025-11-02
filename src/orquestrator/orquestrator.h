@@ -11,6 +11,7 @@
 
 class orquestrator
 {
+
     public:
         orquestrator(sfdc_client&& sfdc_client, resource_repo&& resource_repo):
             sfdc_client_(std::move(sfdc_client)),
@@ -37,7 +38,7 @@ class orquestrator
 
         static std::string get_state_async_request(const std::string& body);
 
-        static std::string get_problem_async_request(const std::string& body);
+        static std::pair<std::string, std::uint32_t> parse_async_response(const std::string& body);
 
         static std::vector<resource> get_all_resources_parser(std::string_view body, const std::string& orgid);
 

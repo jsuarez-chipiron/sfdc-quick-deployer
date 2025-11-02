@@ -3,6 +3,7 @@
 #include <string>
 #include "orquestrator.h"
 #include <nlohmann/json.hpp>
+#include <utility>
 #include "../req_res_utils/req_res_utils.h"
 
 int orquestrator::execute(int argc, char** argv)
@@ -120,14 +121,21 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
             }
         }
 
+        const auto [errors, num_components] = parse_async_response(response_body);
+
         if ( last_state == "Failed" )
         {
-            std::cerr << "\nERROR: Updating resource ==> [ ERRORLIST ]\n" << get_problem_async_request(response_body);
+            std::cerr << "\nERROR: Updating resource ==> [ ERRORLIST ]\n" << errors;
             return 1;
         }
         else if ( last_state != "Completed" )
         {
-            std::cerr << "\nERROR: Updating resource ==> [ errmsg: :::TIMEOUT:::]  --  ";
+            std::cerr << "\nERROR: Updating resource ==> [ errmsg: :::TIMEOUT::: ]  --  ";
+            return 1;
+        }
+        else if ( num_components == 0 )
+        {
+            std::cerr << "\nERROR: Updating resource ==> [ errmsg: :::UNSUPPORTED CHARACTER::: ]  --  ";
             return 1;
         }
         std::cout << "\nResource update correctly ==> [async_id: " << async_id << "]  --  ";
@@ -282,7 +290,7 @@ std::vector<resource> orquestrator::get_all_resources_parser(std::string_view bo
     return ret;
 }
 
-std::string orquestrator::get_problem_async_request(const std::string& body)
+std::pair<std::string, std::uint32_t> orquestrator::parse_async_response(const std::string& body)
 {
     using nlohmann::json;
 
@@ -290,21 +298,23 @@ std::string orquestrator::get_problem_async_request(const std::string& body)
 
     auto failures = json_response["DeployDetails"]["componentFailures"];
 
-    std::string ret;
-	for (auto it = failures.begin(); it != failures.end(); ++it) 
+    std::string errors;
+	for (const auto& failure : failures) 
     {
-        auto failure_problem = (*it)["problem"].get<std::string>();
-        auto failure_filename = (*it)["fileName"].get<std::string>();
-        auto failure_line = std::to_string((*it)["lineNumber"].get<int>());
-        auto failure_column = std::to_string((*it)["columnNumber"].get<int>());
-        ret += "force-app/main/default/"; 
-        ret += failure_filename + ':'; 
-        ret += failure_line + ':'; 
-        ret += failure_problem + ':'; 
-        ret += failure_column + '\n';
+        auto failure_problem = failure["problem"].get<std::string>();
+        auto failure_filename = failure["fileName"].get<std::string>();
+        auto failure_line = std::to_string(failure["lineNumber"].get<int>());
+        auto failure_column = std::to_string(failure["columnNumber"].get<int>());
+        errors += "force-app/main/default/"; 
+        errors += failure_filename + ':'; 
+        errors += failure_line + ':'; 
+        errors += failure_column + ':';
+        errors += failure_problem + '\n'; 
     }
 
-    return ret;
+    auto allComponentMessages = json_response["DeployDetails"]["allComponentMessages"];
+
+    return std::make_pair(errors, allComponentMessages.size());
 }
 
 bool orquestrator::write_class_to_file(const std::string& filename, std::string file_content)
