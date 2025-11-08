@@ -25,7 +25,7 @@ std::string req_res_utils::parse_body() const
     return ret;
 }
 
-std::string req_res_utils::fix_body(std::string body)
+std::string fix_double_quote(std::string body) //NOLINT
 {
     char sustitutee = '"';
  
@@ -35,6 +35,28 @@ std::string req_res_utils::fix_body(std::string body)
         offset += pos+3;
         body.replace(offset-3, 1, R"(\")");
     }
+    return body;
+}
+
+std::string fix_tab(std::string body) //NOLINT
+{
+    char sustitutee = '\t';
+ 
+    size_t pos = -1;
+    size_t offset = 0;
+    while ((pos = body.substr(offset).find(sustitutee)) != std::string::npos) {
+        offset += pos+1;
+        body.replace(offset-1, 1, "    ");
+        std::cout << "WARNING: tab replaced at position " << offset-1 << '\n';
+
+    }
+    return body;
+}
+
+std::string req_res_utils::fix_body(std::string body)
+{
+    body = fix_double_quote(body);
+    body = fix_tab(body);
     return body;
 }
 
