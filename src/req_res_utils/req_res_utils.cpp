@@ -60,6 +60,31 @@ std::string req_res_utils::fix_request_body(std::string body)
     return body;
 }
 
+std::string req_res_utils::fix_response_body(const std::string& body)
+{
+    std::string new_body;
+    new_body.reserve(body.length());
+    size_t pos = 0;
+
+    for (pos=0; pos<body.length(); ++pos)
+    {
+        char c = body[pos];
+        if ( c != '\\' ) { new_body += c; }
+        else
+        {
+            size_t next_char_index = pos+1;
+            if ( next_char_index < body.length() && body[next_char_index] == 't' )
+            {
+                std::cout << "WARNING: tab replaced for 4 spaces at position: " << pos << '\n';
+                new_body += "    ";
+                pos++;
+            }
+            else { new_body += c; }
+        }
+    }
+    return new_body;
+}
+
 std::string req_res_utils::insert_body(const std::string& body)
 {
     std::stringstream ss;

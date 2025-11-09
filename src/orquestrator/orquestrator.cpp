@@ -319,6 +319,7 @@ std::pair<std::string, std::uint32_t> orquestrator::parse_async_response(const s
 
 bool orquestrator::write_class_to_file(const std::string& filename, std::string file_content)
 {
+    file_content = req_res_utils::fix_response_body(file_content);
     std::ofstream out(filename);
     std::string delimiter = "\\n";
 

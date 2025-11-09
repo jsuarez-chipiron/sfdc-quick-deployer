@@ -27,6 +27,8 @@ class req_res_utils
 
         static std::string fix_request_body(std::string body);
 
+        static std::string fix_response_body(const std::string& body);
+
         static std::string insert_body(const std::string& body);
 
         static std::string metadata_container_body();
