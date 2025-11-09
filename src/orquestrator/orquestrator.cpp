@@ -60,7 +60,7 @@ int orquestrator::upload_resource(const std::string& resource_filepath)
     req_res_utils r_reader(resource_filepath);
     std::string body = r_reader.parse_body();
 
-    body = req_res_utils::fix_body(body);
+    body = req_res_utils::fix_request_body(body);
 
     if ( resource_repo_.get_repo().contains(identifier) )
     {

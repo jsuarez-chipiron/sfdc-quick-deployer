@@ -53,7 +53,7 @@ std::string fix_tab(std::string body) //NOLINT
     return body;
 }
 
-std::string req_res_utils::fix_body(std::string body)
+std::string req_res_utils::fix_request_body(std::string body)
 {
     body = fix_double_quote(body);
     body = fix_tab(body);
